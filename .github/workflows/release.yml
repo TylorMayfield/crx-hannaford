@@ -20,11 +20,10 @@ jobs:
    steps:
    - uses: actions/checkout@v3
 
-   - name: Setup Node.js
-     uses: actions/setup-node@v3
-     with:
-       node-version: "18"
-       cache: "npm"
+  - name: Setup Node.js
+    uses: actions/setup-node@v4
+    with:
+      node-version: "20"
 
    - name: Validate version
      run: |
@@ -42,8 +41,10 @@ jobs:
        jq --arg version "$VERSION" '.version = $version' package.json > package_temp.json
        mv package_temp.json package.json
 
-   - name: Install dependencies
-     run: npm ci
+  - name: Clean and install dependencies
+    run: |
+      rm -rf node_modules
+      npm install
 
    - name: Build extension
      run: npm run build
