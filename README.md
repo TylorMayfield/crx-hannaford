@@ -1,72 +1,80 @@
-# Chrome Extension Template with Mantine UI
+# Hannaford Coupons Auto-Clipper (Chrome Extension)
 
-A minimal Chrome extension template built with React and Mantine UI. This template provides a clean starting point for building Chrome extensions with a modern UI framework.
+Automatically scroll and clip available coupons on `https://www.hannaford.com/coupons` with one click.
 
-## Features
+> IMPORTANT: This project is for personal convenience and educational purposes only.
 
-- **React 18**: Built with the latest version of React
-- **Mantine UI**: Beautiful and customizable UI components
-- **Modern Build System**: Uses Vite for fast development and builds
-- **TypeScript Support**: Includes TypeScript configurations
-- **Notification System**: Demonstrates Mantine's notification system
-- **Tabler Icons**: Integrated with Mantine UI
+## What it does
 
-## Getting Started
+- Opens or focuses the Hannaford coupons page
+- Scrolls to the bottom with a 250ms delay between steps until no more coupons auto-load
+- Clicks all coupon buttons (`.clipTarget`) with a 750ms stagger
+- Shows status notifications in the popup
 
-1. Clone this repository
-2. Install dependencies:
+You must be logged in to your Hannaford account for clipping to work.
+
+## Installation (Developer Mode)
+
+1. Install dependencies:
    ```bash
    npm install
    ```
-3. Build the extension:
+2. Build the extension:
    ```bash
    npm run build
    ```
-4. Load the extension:
-   - Open Chrome and go to `chrome://extensions/`
+3. Load the extension in Chrome:
+   - Navigate to `chrome://extensions/`
    - Enable "Developer mode"
    - Click "Load unpacked" and select the `dist` directory
+
+## Usage
+
+1. Click the extension icon to open the popup
+2. Press "Clip All Coupons"
+3. If you're not logged in, the extension will prompt you to log in first
+
+## Permissions
+
+- `tabs`, `scripting` (to open/focus the coupons tab and message the content script)
+- Host permission: `https://www.hannaford.com/*`
+
+## Privacy
+
+See `PRIVACY.md`. This extension does not collect, transmit, or sell personal data.
+
+## Disclaimer (Non‑Affiliation)
+
+This project is an independent, community-built tool. **I am not affiliated with Hannaford, Hannaford Supermarkets, Ahold Delhaize, or any Hannaford-related entity.** All trademarks, service marks, and brand names are the property of their respective owners.
+
+## Development
+
+- React 18 + Mantine UI
+- Built with Vite and `@crxjs/vite-plugin`
+
+### Scripts
+
+```bash
+npm run dev      # local development
+npm run build    # production build (outputs to dist)
+npm run preview  # preview build
+```
 
 ## Project Structure
 
 ```
 ├── src/
-│   ├── App.jsx          # Main application component
-│   ├── main.jsx         # Application entry point
-│   └── App.css          # Global styles
-├── src/components/     # Component directory
-└── index.html           # HTML template
-├── manifest.json        # Extension manifest
-├── vite.config.js       # Vite configuration
-└── manifest.json        # Extension manifest
-└── icon.png             # Extension icon
-└── PRIVACY.md           # Privacy policy
-└── README.md            # Project README
-└── package.json         # Project configuration
-└── package-lock.json    # Project lock file
-
-
+│   ├── App.jsx              # Popup UI
+│   ├── main.jsx             # Popup entry
+│   ├── App.css              # Popup styles
+│   └── content/content.js   # Coupons logic (scroll + click)
+├── index.html               # Popup HTML
+├── manifest.json            # Chrome extension manifest (MV3)
+├── vite.config.js           # Build config
+├── PRIVACY.md               # Privacy policy
+└── README.md                # This file
 ```
 
-## Links
+## License
 
-- [GitHub Repository](https://github.com/TylorMayfield/crx-template)
-- [Chrome Web Store](https://chromewebstore.google.com/detail/chrome-extension-template/mechhnlbchididihbgadhfokjnbhfbed)
-
-## Customization
-
-The template uses Mantine UI's theme system. You can customize the theme in `App.jsx`:
-
-```javascript
-<MantineProvider
-  theme={{
-    colorScheme: preferredColorScheme,
-    // Add your theme customizations here
-  }}
->
-```
-
-## Links
-
-- [GitHub Repository](https://github.com/TylorMayfield/crx-template)
-- [Chrome Web Store](https://chromewebstore.google.com/detail/chrome-extension-template/mechhnlbchididihbgadhfokjnbhfbed)
+MIT

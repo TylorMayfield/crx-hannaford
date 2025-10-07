@@ -7,33 +7,68 @@ import {
   Stack,
   Card,
   Box,
-  ActionIcon,
-  useMantineColorScheme,
+  Badge,
+  Divider,
+  Image,
 } from "@mantine/core";
-import { useColorScheme } from "@mantine/hooks";
 import { Notifications } from "@mantine/notifications";
 import { notifications } from "@mantine/notifications";
 import {
-  IconSun,
-  IconMoon,
   IconBrandGithub,
-  IconBrandChrome,
 } from "@tabler/icons-react";
 import "./App.css";
 
 function App() {
-  const preferredColorScheme = useColorScheme();
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme({
-    defaultValue: preferredColorScheme,
-  });
-  const dark = colorScheme === "dark";
+  const dark = true; // Always use dark mode
 
-  const showNotification = () => {
-    notifications.show({
-      title: "Hello!",
-      message: "This is a Mantine notification",
-      color: "blue",
-    });
+
+  const openAndClipCoupons = async () => {
+    const couponsUrl = "https://www.hannaford.com/coupons";
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (tab && tab.url && tab.url.startsWith("https://www.hannaford.com/")) {
+        chrome.tabs.update(tab.id, { url: couponsUrl }, () => {
+          const targetTabId = tab.id;
+          const onUpdated = (updatedTabId, info) => {
+            if (updatedTabId === targetTabId && info.status === "complete") {
+              chrome.tabs.onUpdated.removeListener(onUpdated);
+              chrome.tabs.sendMessage(targetTabId, { type: "CLIP_HANNAFORD_COUPONS" }, (resp) => {
+                if (resp && resp.ok) {
+                  notifications.show({ title: "Coupons", message: `Clipping ${resp.clicked} coupons...`, color: "green" });
+                } else if (resp && resp.reason === "not_logged_in") {
+                  notifications.show({ title: "Login required", message: "Please log in to Hannaford, then try again.", color: "yellow" });
+                } else {
+                  notifications.show({ title: "Error", message: "Could not start coupon clipping.", color: "red" });
+                }
+              });
+            }
+          };
+          chrome.tabs.onUpdated.addListener(onUpdated);
+        });
+        return;
+      }
+
+      chrome.tabs.create({ url: couponsUrl, active: true }, (createdTab) => {
+        const targetTabId = createdTab.id;
+        const onUpdated = (updatedTabId, info) => {
+          if (updatedTabId === targetTabId && info.status === "complete") {
+            chrome.tabs.onUpdated.removeListener(onUpdated);
+            chrome.tabs.sendMessage(targetTabId, { type: "CLIP_HANNAFORD_COUPONS" }, (resp) => {
+              if (resp && resp.ok) {
+                notifications.show({ title: "Coupons", message: `Clipping ${resp.clicked} coupons...`, color: "green" });
+              } else if (resp && resp.reason === "not_logged_in") {
+                notifications.show({ title: "Login required", message: "Please log in to Hannaford, then try again.", color: "yellow" });
+              } else {
+                notifications.show({ title: "Error", message: "Could not start coupon clipping.", color: "red" });
+              }
+            });
+          }
+        };
+        chrome.tabs.onUpdated.addListener(onUpdated);
+      });
+    } catch (e) {
+      notifications.show({ title: "Error", message: String(e), color: "red" });
+    }
   };
 
   function Footer() {
@@ -51,19 +86,12 @@ function App() {
             style={{ display: "inline-flex", alignItems: "center" }}
           >
             <a
-              href="https://github.com/TylorMayfield/crx-template"
+              href="https://github.com/TylorMayfield/crx-hannaford"
               target="_blank"
               rel="noopener noreferrer"
               style={{ marginRight: "10px" }}
             >
               <IconBrandGithub />
-            </a>
-            <a
-              href="https://chromewebstore.google.com/detail/chrome-extension-template/mechhnlbchididihbgadhfokjnbhfbed"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <IconBrandChrome />
             </a>
           </Text>
         </Group>
@@ -74,7 +102,7 @@ function App() {
   return (
     <MantineProvider
       theme={{
-        colorScheme,
+        colorScheme: "dark",
       }}
       withGlobalStyles
       withNormalizeCSS
@@ -91,27 +119,49 @@ function App() {
         <AppShell padding="md" style={{ minHeight: "100vh" }}>
           <Stack spacing="lg">
             <Card shadow="sm" p="lg" radius="md" withBorder>
-              <Group position="apart" mb="md">
-                <Text size="xl" weight={500}>
-                  Chrome Extension Template
+              <Box
+                style={{
+                  background: dark
+                    ? "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0b1324 100%)"
+                    : "linear-gradient(135deg, #e0f2fe 0%, #dbeafe 50%, #f0f9ff 100%)",
+                  borderRadius: 12,
+                  padding: "16px",
+                  marginBottom: "12px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                }}
+              >
+                <Image src="banner.png" alt="Hannaford" width={48} height={48} radius={8} withPlaceholder={false} />
+                <Box style={{ flex: 1 }}>
+                  <Group align="center" justify="space-between">
+                    <Text size="lg" weight={600}>Hannaford Coupons</Text>
+                    <Badge color="yellow" variant="filled">Ready</Badge>
+                  </Group>
+                  <Text size="sm" color="dimmed">Auto-clip coupons with one click</Text>
+                </Box>
+              </Box>
+
+              <Divider my="sm" />
+
+              <Stack spacing="md" mb="sm">
+                <Text size="sm" color="dimmed" align="center">
+                  Click the button below to automatically scroll through all available coupons and clip them to your account.
                 </Text>
-                <ActionIcon
-                  variant="outline"
-                  color={dark ? "yellow" : "blue"}
-                  onClick={() => toggleColorScheme()}
-                  title="Toggle color scheme"
+                <Text size="xs" color="dimmed" align="center">
+                  Make sure you're logged in to your Hannaford account first.
+                </Text>
+                <Button 
+                  variant="gradient" 
+                  gradient={{ from: "teal", to: "green" }} 
+                  onClick={openAndClipCoupons}
+                  size="lg"
+                  fullWidth
                 >
-                  {dark ? <IconSun size={18} /> : <IconMoon size={18} />}
-                </ActionIcon>
-              </Group>
-              <Text color="dimmed" size="sm" align="center" mb="xl">
-                Built with Mantine UI
-              </Text>
-              <Group align="center" justify="center" spacing="sm">
-                <Button variant="light" onClick={showNotification}>
-                  Show Notification
+                  Clip All Coupons
                 </Button>
-              </Group>
+              </Stack>
+
               <Footer />
             </Card>
           </Stack>

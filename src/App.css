@@ -21,3 +21,15 @@
   background-color: #2c2c2c;
   color: #ffffff;
 }
+
+.popup-root {
+  min-width: 420px;
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 50%, #f0f9ff 100%);
+}
+
+.gradient-bg-dark {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0b1324 100%);
+}
