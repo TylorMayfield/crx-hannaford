@@ -14,58 +14,58 @@ permissions:
  packages: write
 
 jobs:
- build:
-   runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
-  steps:
-  - uses: actions/checkout@v4
+    steps:
+    - uses: actions/checkout@v4
 
-  - name: Setup Node.js
-    uses: actions/setup-node@v4
-    with:
-      node-version: "20"
-      
-  - name: Verify Node.js version
-    run: node --version && npm --version
-      
-  - name: Install jq
-    run: sudo apt-get update && sudo apt-get install -y jq
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "20"
+        
+    - name: Verify Node.js version
+      run: node --version && npm --version
+        
+    - name: Install jq
+      run: sudo apt-get update && sudo apt-get install -y jq
 
-   - name: Validate version
-     run: |
-       VERSION="${{ inputs.version }}"
-       if [[ ! $VERSION =~ ^[0-9]+\.[0-9]+$ ]]; then
-         echo "Invalid version format. Use X.Y (e.g., 1.4)"
-         exit 1
-       fi
+    - name: Validate version
+      run: |
+        VERSION="${{ inputs.version }}"
+        if [[ ! $VERSION =~ ^[0-9]+\.[0-9]+$ ]]; then
+          echo "Invalid version format. Use X.Y (e.g., 1.4)"
+          exit 1
+        fi
 
-  - name: Update manifest versions
-    run: |
-      VERSION="${{ inputs.version }}"
-      jq --arg version "$VERSION" '.version = $version' manifest.json > manifest_temp.json
-      mv manifest_temp.json manifest.json
-      jq --arg version "$VERSION" '.version = $version' package.json > package_temp.json
-      mv package_temp.json package.json
-      echo "Updated versions to $VERSION"
-      echo "Manifest version: $(jq -r '.version' manifest.json)"
-      echo "Package version: $(jq -r '.version' package.json)"
+    - name: Update manifest versions
+      run: |
+        VERSION="${{ inputs.version }}"
+        jq --arg version "$VERSION" '.version = $version' manifest.json > manifest_temp.json
+        mv manifest_temp.json manifest.json
+        jq --arg version "$VERSION" '.version = $version' package.json > package_temp.json
+        mv package_temp.json package.json
+        echo "Updated versions to $VERSION"
+        echo "Manifest version: $(jq -r '.version' manifest.json)"
+        echo "Package version: $(jq -r '.version' package.json)"
 
-  - name: Clean and install dependencies
-    run: |
-      rm -rf node_modules
-      npm install
+    - name: Clean and install dependencies
+      run: |
+        rm -rf node_modules
+        npm install
 
-   - name: Build extension
-     run: npm run build
+    - name: Build extension
+      run: npm run build
 
-   - name: Zip extension
-     run: |
-       cd dist
-       zip -r ../extension.zip *
+    - name: Zip extension
+      run: |
+        cd dist
+        zip -r ../extension.zip *
 
-   - name: Create Release
-     uses: softprops/action-gh-release@v1
-     with:
-       files: extension.zip
-       tag_name: v${{ inputs.version }}
-       generate_release_notes: true
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: extension.zip
+        tag_name: v${{ inputs.version }}
+        generate_release_notes: true
