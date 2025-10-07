@@ -166,7 +166,15 @@ function App() {
               >
                 <Box style={{ flex: 1 }}>
                   <Group align="center" justify="space-between">
-                    <Text size="lg" weight={600}>
+                    <Text
+                      size="lg"
+                      weight={700}
+                      style={{
+                        color: "#ffffff",
+                        textShadow: "0 1px 3px rgba(0, 0, 0, 0.5)",
+                        letterSpacing: "0.5px",
+                      }}
+                    >
                       Hannaford Coupons
                     </Text>
                   </Group>
