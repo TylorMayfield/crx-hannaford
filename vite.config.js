@@ -3,6 +3,9 @@ import react from "@vitejs/plugin-react";
 import { crx } from "@crxjs/vite-plugin";
 import manifest from "./manifest.json";
 import { resolve } from "path";
+import { fileURLToPath, URL } from "node:url";
+
+const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 export default defineConfig({
   plugins: [react(), crx({ manifest })],
