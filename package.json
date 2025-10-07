@@ -1,8 +1,8 @@
 {
-  "name": "crx-template",
+  "name": "hannaford-coupons-auto-clipper",
   "private": false,
-  "version": "v1.53",
-  "description": "Chrome Extension Template with Mantine UI",
+  "version": "1.0.0",
+  "description": "Automatically scroll and clip all available coupons on Hannaford.com with one click",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,8 +12,10 @@
   },
   "keywords": [
     "chrome-extension",
-    "mantine",
-    "template"
+    "hannaford",
+    "coupons",
+    "automation",
+    "mantine"
   ],
   "author": "",
   "license": "ISC",
