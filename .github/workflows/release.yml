@@ -50,11 +50,11 @@ jobs:
           echo "Manifest version: $(jq -r '.version' manifest.json)"
           echo "Package version: $(jq -r '.version' package.json)"
 
-       - name: Clean and install dependencies
-         run: |
-           rm -rf node_modules
-           rm -f package-lock.json
-           npm install
+      - name: Clean and install dependencies
+        run: |
+          rm -rf node_modules
+          rm -f package-lock.json
+          npm install
 
       - name: Build extension
         run: npm run build
