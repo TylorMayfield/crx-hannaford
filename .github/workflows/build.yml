@@ -25,6 +25,7 @@ jobs:
     - name: Clean and install dependencies
       run: |
         rm -rf node_modules
+        rm -f package-lock.json
         npm install
       
     - name: Build extension
