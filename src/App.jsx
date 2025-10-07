@@ -175,7 +175,7 @@ function App() {
                         letterSpacing: "0.5px",
                       }}
                     >
-                      Hannaford Coupons
+                      Hannaford Coupons Auto-Clipper
                     </Text>
                   </Group>
                 </Box>
