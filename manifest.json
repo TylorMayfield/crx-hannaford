@@ -3,35 +3,26 @@
   "name": "Hannaford Coupons Auto-Clipper",
   "version": "1.0",
   "description": "Automatically scroll and clip all available coupons on Hannaford.com with one click",
-  "permissions": [
-    "tabs",
-    "scripting"
-  ],
-  "host_permissions": [
-    "https://www.hannaford.com/*"
-  ],
+  "permissions": ["tabs", "scripting"],
+  "host_permissions": ["https://www.hannaford.com/*"],
   "content_scripts": [
     {
-      "matches": [
-        "https://www.hannaford.com/*"
-      ],
-      "js": [
-        "src/content/content.js"
-      ],
+      "matches": ["https://www.hannaford.com/*"],
+      "js": ["src/content/content.js"],
       "run_at": "document_idle"
     }
   ],
   "action": {
     "default_popup": "index.html",
     "default_icon": {
-      "16": "icon.jpg",
-      "48": "icon.jpg",
-      "128": "icon.jpg"
+      "16": "icon-16.png",
+      "48": "icon-48.png",
+      "128": "icon-128.png"
     }
   },
   "icons": {
-    "16": "icon.jpg",
-    "48": "icon.jpg",
-    "128": "icon.jpg"
+    "16": "icon-16.png",
+    "48": "icon-48.png",
+    "128": "icon-128.png"
   }
 }

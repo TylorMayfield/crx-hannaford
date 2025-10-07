@@ -13,34 +13,50 @@ import {
 } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { notifications } from "@mantine/notifications";
-import {
-  IconBrandGithub,
-} from "@tabler/icons-react";
+import { IconBrandGithub } from "@tabler/icons-react";
 import "./App.css";
 
 function App() {
   const dark = true; // Always use dark mode
 
-
   const openAndClipCoupons = async () => {
     const couponsUrl = "https://www.hannaford.com/coupons";
     try {
-      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      const [tab] = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
       if (tab && tab.url && tab.url.startsWith("https://www.hannaford.com/")) {
         chrome.tabs.update(tab.id, { url: couponsUrl }, () => {
           const targetTabId = tab.id;
           const onUpdated = (updatedTabId, info) => {
             if (updatedTabId === targetTabId && info.status === "complete") {
               chrome.tabs.onUpdated.removeListener(onUpdated);
-              chrome.tabs.sendMessage(targetTabId, { type: "CLIP_HANNAFORD_COUPONS" }, (resp) => {
-                if (resp && resp.ok) {
-                  notifications.show({ title: "Coupons", message: `Clipping ${resp.clicked} coupons...`, color: "green" });
-                } else if (resp && resp.reason === "not_logged_in") {
-                  notifications.show({ title: "Login required", message: "Please log in to Hannaford, then try again.", color: "yellow" });
-                } else {
-                  notifications.show({ title: "Error", message: "Could not start coupon clipping.", color: "red" });
+              chrome.tabs.sendMessage(
+                targetTabId,
+                { type: "CLIP_HANNAFORD_COUPONS" },
+                (resp) => {
+                  if (resp && resp.ok) {
+                    notifications.show({
+                      title: "Coupons",
+                      message: `Clipping ${resp.clicked} coupons...`,
+                      color: "green",
+                    });
+                  } else if (resp && resp.reason === "not_logged_in") {
+                    notifications.show({
+                      title: "Login required",
+                      message: "Please log in to Hannaford, then try again.",
+                      color: "yellow",
+                    });
+                  } else {
+                    notifications.show({
+                      title: "Error",
+                      message: "Could not start coupon clipping.",
+                      color: "red",
+                    });
+                  }
                 }
-              });
+              );
             }
           };
           chrome.tabs.onUpdated.addListener(onUpdated);
@@ -53,15 +69,31 @@ function App() {
         const onUpdated = (updatedTabId, info) => {
           if (updatedTabId === targetTabId && info.status === "complete") {
             chrome.tabs.onUpdated.removeListener(onUpdated);
-            chrome.tabs.sendMessage(targetTabId, { type: "CLIP_HANNAFORD_COUPONS" }, (resp) => {
-              if (resp && resp.ok) {
-                notifications.show({ title: "Coupons", message: `Clipping ${resp.clicked} coupons...`, color: "green" });
-              } else if (resp && resp.reason === "not_logged_in") {
-                notifications.show({ title: "Login required", message: "Please log in to Hannaford, then try again.", color: "yellow" });
-              } else {
-                notifications.show({ title: "Error", message: "Could not start coupon clipping.", color: "red" });
+            chrome.tabs.sendMessage(
+              targetTabId,
+              { type: "CLIP_HANNAFORD_COUPONS" },
+              (resp) => {
+                if (resp && resp.ok) {
+                  notifications.show({
+                    title: "Coupons",
+                    message: `Clipping ${resp.clicked} coupons...`,
+                    color: "green",
+                  });
+                } else if (resp && resp.reason === "not_logged_in") {
+                  notifications.show({
+                    title: "Login required",
+                    message: "Please log in to Hannaford, then try again.",
+                    color: "yellow",
+                  });
+                } else {
+                  notifications.show({
+                    title: "Error",
+                    message: "Could not start coupon clipping.",
+                    color: "red",
+                  });
+                }
               }
-            });
+            );
           }
         };
         chrome.tabs.onUpdated.addListener(onUpdated);
@@ -132,13 +164,12 @@ function App() {
                   gap: "12px",
                 }}
               >
-                <Image src="banner.png" alt="Hannaford" width={48} height={48} radius={8} withPlaceholder={false} />
                 <Box style={{ flex: 1 }}>
                   <Group align="center" justify="space-between">
-                    <Text size="lg" weight={600}>Hannaford Coupons</Text>
-                    <Badge color="yellow" variant="filled">Ready</Badge>
+                    <Text size="lg" weight={600}>
+                      Hannaford Coupons
+                    </Text>
                   </Group>
-                  <Text size="sm" color="dimmed">Auto-clip coupons with one click</Text>
                 </Box>
               </Box>
 
@@ -146,14 +177,24 @@ function App() {
 
               <Stack spacing="md" mb="sm">
                 <Text size="sm" color="dimmed" align="center">
-                  Click the button below to automatically scroll through all available coupons and clip them to your account.
+                  Click the button below to automatically scroll through all
+                  available coupons and clip them to your account.
                 </Text>
                 <Text size="xs" color="dimmed" align="center">
                   Make sure you're logged in to your Hannaford account first.
                 </Text>
-                <Button 
-                  variant="gradient" 
-                  gradient={{ from: "teal", to: "green" }} 
+                <Text
+                  size="xs"
+                  color="dimmed"
+                  align="center"
+                  style={{ fontStyle: "italic" }}
+                >
+                  Disclaimer: This extension is not affiliated with or endorsed
+                  by Hannaford Bros. Co.
+                </Text>
+                <Button
+                  variant="gradient"
+                  gradient={{ from: "teal", to: "green" }}
                   onClick={openAndClipCoupons}
                   size="lg"
                   fullWidth
