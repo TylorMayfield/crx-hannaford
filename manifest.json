@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Hannaford Coupons Auto-Clipper",
-  "version": "1.1",
+  "version": "1.2",
   "description": "Automatically scroll and clip all available coupons on Hannaford.com with one click",
   "permissions": ["tabs"],
   "host_permissions": ["https://www.hannaford.com/*"],
