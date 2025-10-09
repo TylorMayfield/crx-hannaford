@@ -45,14 +45,16 @@ async function clipAllCoupons() {
     setTimeout(() => {
       try {
         el.click();
-      } catch (_) {}
+      } catch {
+        // This is noisy, but we don't care if it fails
+      }
     }, index * 750);
   });
 
   return { ok: true, clicked: elements.length };
 }
 
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message && message.type === "CLIP_HANNAFORD_COUPONS") {
     clipAllCoupons().then(sendResponse);
     return true;
