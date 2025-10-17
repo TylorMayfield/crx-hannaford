@@ -1,25 +1,4 @@
-console.log("content script loaded");
-
-function delay(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function scrollToBottomUntilStable({ intervalMs = 250, maxSteps = 400 } = {}) {
-  let previousHeight = 0;
-  let stableCount = 0;
-  for (let step = 0; step < maxSteps; step++) {
-    window.scrollTo({ top: document.body.scrollHeight, behavior: "instant" });
-    await delay(intervalMs);
-    const currentHeight = document.body.scrollHeight;
-    if (currentHeight === previousHeight) {
-      stableCount += 1;
-      if (stableCount >= 2) break;
-    } else {
-      stableCount = 0;
-      previousHeight = currentHeight;
-    }
-  }
-}
+const  COUPON_SELECTOR = "button[data-test-id='coupon-clip-button'], button[data-test-id='coupon-clipped-button']";
 
 function isLikelyLoggedIn() {
   const text = document.body.innerText || "";
@@ -33,30 +12,69 @@ function isLikelyLoggedIn() {
   return hasAccountElement || !hasSignInText;
 }
 
-async function clipAllCoupons() {
-  if (!isLikelyLoggedIn()) {
-    return { ok: false, reason: "not_logged_in" };
-  }
-
-  await scrollToBottomUntilStable({ intervalMs: 250 });
-
-  const elements = Array.from(document.querySelectorAll(".clipTarget"));
-  elements.forEach((el, index) => {
-    setTimeout(() => {
-      try {
-        el.click();
-      } catch {
-        // This is noisy, but we don't care if it fails
-      }
-    }, index * 750);
+function observeForCoupons(onCouponsReady) {
+  let timeoutId;
+  const observer = new MutationObserver(() => {
+    const coupons = document.querySelectorAll(COUPON_SELECTOR);
+    if (coupons.length > 0) {
+      clearTimeout(timeoutId);
+      observer.disconnect();
+      onCouponsReady(coupons);
+    }
   });
 
-  return { ok: true, clicked: elements.length };
+  observer.observe(document.body, { childList: true, subtree: true });
+
+  timeoutId = setTimeout(() => {
+    observer.disconnect();
+    onCouponsReady(document.querySelectorAll(COUPON_SELECTOR));
+  }, 10000); // 10-second timeout
+}
+
+async function clipCoupons() {
+  if (!isLikelyLoggedIn()) {
+    chrome.runtime.sendMessage({ type: "NOT_LOGGED_IN" });
+    return;
+  }
+
+  observeForCoupons(async (coupons) => {
+    if (coupons.length === 0) {
+      chrome.runtime.sendMessage({
+        type: "CLIPPING_COMPLETE",
+        total: 0,
+        clipped: 0,
+      });
+      return;
+    }
+
+    let clippedCount = 0;
+    for (let i = 0; i < coupons.length; i++) {
+      const coupon = coupons[i];
+      if (coupon.getAttribute("data-test-id") === "coupon-clip-button") {
+        coupon.click();
+        clippedCount++;
+        await new Promise((resolve) => setTimeout(resolve, 200)); // Wait for potential UI updates
+      }
+      chrome.runtime.sendMessage({
+        type: "CLIPPING_PROGRESS",
+        processed: i + 1,
+        total: coupons.length,
+        clipped: clippedCount,
+      });
+    }
+
+    chrome.runtime.sendMessage({
+      type: "CLIPPING_COMPLETE",
+      total: coupons.length,
+      clipped: clippedCount,
+    });
+  });
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message && message.type === "CLIP_HANNAFORD_COUPONS") {
-    clipAllCoupons().then(sendResponse);
-    return true;
+  if (message.type === "START_CLIPPING") {
+    clipCoupons();
+    sendResponse({ ok: true });
   }
+  return true;
 });
