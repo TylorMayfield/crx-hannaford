@@ -1,7 +1,7 @@
 {
   "name": "hannaford-coupons-auto-clipper",
   "private": false,
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Automatically scroll and clip all available coupons on Hannaford.com with one click",
   "type": "module",
   "scripts": {
