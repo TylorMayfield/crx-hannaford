@@ -80,42 +80,44 @@ function App() {
   };
 
   return (
-    <AppShell padding="md" header={{ height: 60 }}>
-      <AppShell.Header p="xs">
-        <Group position="apart">
-          <Title order={3}>Hannaford Coupons</Title>
-          <a
-            href="https://github.com/TylorMayfield/crx-hannaford"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <IconBrandGithub size={24} />
-          </a>
-        </Group>
-      </AppShell.Header>
-      <Container>
-        <Stack spacing="lg">
-          <Text size="sm" align="center">
-            Automatically clip all available coupons on Hannaford.com.
-          </Text>
-          <Button
-            variant="gradient"
-            gradient={{ from: "teal", to: "green" }}
-            onClick={handleClipCoupons}
-            size="lg"
-            fullWidth
-          >
-            Clip All Coupons
-          </Button>
-          <Text size="xs" color="dimmed" align="center">
-            Make sure you are logged in to your Hannaford account first.
-          </Text>
-          <Text size="xs" color="dimmed" align="center" mt="xl">
-            Not affiliated with Hannaford.
-          </Text>
-        </Stack>
-      </Container>
-    </AppShell>
+    <div style={{ width: "400px", minHeight: "500px" }}>
+      <AppShell padding="md" header={{ height: 60 }}>
+        <AppShell.Header p="xs">
+          <Group position="apart">
+            <Title order={3}>Hannaford Coupons</Title>
+            <a
+              href="https://github.com/TylorMayfield/crx-hannaford"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <IconBrandGithub size={24} />
+            </a>
+          </Group>
+        </AppShell.Header>
+        <Container>
+          <Stack spacing="lg">
+            <Text size="sm" align="center">
+              Automatically clip all available coupons on Hannaford.com.
+            </Text>
+            <Button
+              variant="gradient"
+              gradient={{ from: "teal", to: "green" }}
+              onClick={handleClipCoupons}
+              size="lg"
+              fullWidth
+            >
+              Clip All Coupons
+            </Button>
+            <Text size="xs" color="dimmed" align="center">
+              Make sure you are logged in to your Hannaford account first.
+            </Text>
+            <Text size="xs" color="dimmed" align="center" mt="xl">
+              Not affiliated with Hannaford.
+            </Text>
+          </Stack>
+        </Container>
+      </AppShell>
+    </div>
   );
 }
 
